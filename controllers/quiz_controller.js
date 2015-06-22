@@ -16,8 +16,13 @@ exports.load=function(req,res,next,quizId){
 	});
 };
 
-exports.index=function(req,res){
-	models.Quiz.findAll().then(
+exports.index=function(req,res,next){
+	var search="%";
+	if(req.query.search!=undefined){
+		search="%"+req.query.search.toUpperCase()+"%";
+		search=search.trim().replace(/\s/g,"%");
+	}
+	models.Quiz.findAll({where:["upper(pregunta) like ?", search],order:'pregunta ASC'}).then(
 		function(quizes){
 			res.render('quizes/index.ejs',{quizes:quizes});
 		}
